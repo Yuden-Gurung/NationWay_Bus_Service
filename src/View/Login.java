@@ -8,7 +8,7 @@ package View;
  *
  * @author lalit
  */
-import Control.LoginController;
+import Controller.LoginController;
 import javax.swing.JOptionPane;
 
 public class Login extends javax.swing.JFrame {

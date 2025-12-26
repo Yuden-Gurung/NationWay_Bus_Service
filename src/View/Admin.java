@@ -5,7 +5,7 @@
 package View;
 
 import java.awt.CardLayout;
-import Control.BusController;
+import Controller.BusController;
 import Model.Bus;
 import java.awt.HeadlessException;
 import java.util.ArrayList;
@@ -534,23 +534,23 @@ public class Admin extends javax.swing.JFrame {
     private void btnAddBusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddBusActionPerformed
         try {
             int busId = Integer.parseInt(txtBusId.getText());
-            String busNumber = txtBusNumber.getText();
-            String route = txtRoute.getText();
+            String busNumber = txtBusNumber.getText().trim();
+            String route = txtRoute.getText().trim();
+            String time = txtTime.getText().trim();
             double fare = Double.parseDouble(txtFare.getText());
-            String time = txtTime.getText();
             int seats = Integer.parseInt(txtTotalSeats.getText());
-
             Bus bus = new Bus(busId, busNumber, route, fare, time, seats);
-
             boolean added = busController.addBus(bus);
+            
+            if (busNumber.isEmpty() || route.isEmpty() || time.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "All fields are required");
+                return;
+            }
 
             if (added) {
                 JOptionPane.showMessageDialog(this, "Bus added successfully");
-                loadBusTable();
-                loadHomeData();
-                clearBusFields();
             } else {
-                JOptionPane.showMessageDialog(this, "Bus number already exists");
+                JOptionPane.showMessageDialog(this, "Duplicate Bus ID or Bus Number detected");
             }
 
         } catch (NumberFormatException e) {
@@ -575,7 +575,7 @@ public class Admin extends javax.swing.JFrame {
 
             if (updated) {
                 JOptionPane.showMessageDialog(this, "Bus updated successfully");
-                    loadBusTable();
+                loadBusTable();
                 loadHomeData();
                 clearBusFields();
             } else {

@@ -119,7 +119,6 @@ public class Bus {
         }
     }
 
-    // -------- BUSINESS LOGIC WITH TRY-CATCH --------
     public boolean bookSeat() {
         try {
             if (availableSeats <= 0) {

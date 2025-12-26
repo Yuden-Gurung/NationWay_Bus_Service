@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Control;
+package Controller;
 
 /**
  *
@@ -20,7 +20,6 @@ public class BusController {
     private Queue<Bus> recentBuses;
     private Stack<Bus> bookingHistory;
 
-    // CONSTRUCTOR – LOAD PRE-DATA
     public BusController() {
         try {
             busList = new ArrayList<>();
@@ -32,7 +31,6 @@ public class BusController {
         }
     }
 
-    // REQUIRED 5 PRE-DATA
     private void loadPreData() {
         try {
             addBus(new Bus(101, "NW-01", "Kathmandu - Pokhara", 1200, "6:00 AM", 40));
@@ -45,29 +43,26 @@ public class BusController {
         }
     }
 
-    // ADD BUS
     public boolean addBus(Bus bus) {
         try {
             if (bus == null) {
-                throw new IllegalArgumentException("Bus object is null");
+                throw new IllegalArgumentException("Bus is null");
             }
-
-            for (int i = 0; i < busList.size(); i++) {
-                if (busList.get(i).getBusNumber()
-                        .equalsIgnoreCase(bus.getBusNumber())) {
+            for (Bus existingBus : busList) {
+                if (existingBus.getBusId() == bus.getBusId()) {
+                    return false;
+                }
+                if (existingBus.getBusNumber()
+                        .equalsIgnoreCase(bus.getBusNumber().trim())) {
                     return false;
                 }
             }
-
             busList.add(bus);
-
-            // QUEUE – RECENT BUSES
             recentBuses.add(bus);
             if (recentBuses.size() > 5) {
                 recentBuses.poll();
             }
             return true;
-
         } catch (IllegalArgumentException e) {
             System.out.println("Error adding bus: " + e.getMessage());
             return false;
@@ -82,7 +77,6 @@ public class BusController {
         return recentBuses;
     }
 
-    // DELETE BUS
     public boolean deleteBus(int busId) {
         try {
             for (int i = 0; i < busList.size(); i++) {
@@ -130,7 +124,7 @@ public class BusController {
         }
     }
 
-    // STACK – BOOK SEAT
+    // STACK 
     public boolean bookSeat(int busId) {
         try {
             Bus bus = binarySearchById(busId);
@@ -145,7 +139,7 @@ public class BusController {
         }
     }
 
-    // STACK – UNDO LAST BOOKING
+    // STACK 
     public boolean cancelLastBooking() {
         try {
             if (!bookingHistory.isEmpty()) {
@@ -160,7 +154,7 @@ public class BusController {
         }
     }
 
-    // BINARY SEARCH – BUS ID
+    // BINARY SEARCH 
     public Bus binarySearchById(int busId) {
         try {
             sortById();
@@ -187,7 +181,6 @@ public class BusController {
         }
     }
 
-    // BUBBLE SORT – BY FARE
     public void sortByFare() {
         try {
             for (int i = 0; i < busList.size() - 1; i++) {
@@ -204,7 +197,6 @@ public class BusController {
         }
     }
 
-    // SORT BY ID (NO LAMBDA)
     private void sortById() {
         try {
             for (int i = 0; i < busList.size() - 1; i++) {
