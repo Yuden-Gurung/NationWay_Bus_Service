@@ -174,10 +174,9 @@ public class Login extends javax.swing.JFrame {
 
             JOptionPane.showMessageDialog(this, "Admin Login Successful");
 
-            // Open Admin Dashboard
+            // Opens Admin Dashboard
             new Admin().setVisible(true);
 
-            // Close login window
             this.dispose();
 
         } else {

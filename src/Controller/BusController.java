@@ -124,7 +124,7 @@ public class BusController {
         }
     }
 
-    // STACK 
+
     public boolean bookSeat(int busId) {
         try {
             Bus bus = binarySearchById(busId);
@@ -139,7 +139,7 @@ public class BusController {
         }
     }
 
-    // STACK 
+
     public boolean cancelLastBooking() {
         try {
             if (!bookingHistory.isEmpty()) {
@@ -154,7 +154,7 @@ public class BusController {
         }
     }
 
-    // BINARY SEARCH 
+  
     public Bus binarySearchById(int busId) {
         try {
             sortById();

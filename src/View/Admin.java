@@ -42,20 +42,16 @@ public class Admin extends javax.swing.JFrame {
 
     private void loadHomeData() {
 
-        // TOTAL BUSES
         jLabel5.setText("TOTAL BUSES: " + busController.getTotalBuses());
 
-        // AVAILABLE SEATS
         jLabel6.setText("AVAILABLE SEATS: " + busController.getTotalAvailableSeats());
 
-        // RECENTLY ADDED BUSES
         txtRecentBuses.setText("");
         for (Bus bus : busController.getRecentBuses()) {
             txtRecentBuses.append(bus.getBusNumber()
                     + " - " + bus.getRoute() + "\n");
         }
 
-        // ROUTES COVERED
         txtRoutesCovered.setText("");
         for (String route : busController.getRoutesCovered()) {
             txtRoutesCovered.append(route + "\n");
