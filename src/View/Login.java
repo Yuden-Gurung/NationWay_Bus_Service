@@ -179,14 +179,18 @@ public class Login extends javax.swing.JFrame {
 
             this.dispose();
 
-        } else {
+        } 
+        else if(loginController.loginAsUser(username,password)){
+            JOptionPane.showMessageDialog(this, "User Login Successful");
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Invalid Admin Credentials",
-                    "Login Failed",
-                    JOptionPane.ERROR_MESSAGE
-            );
+            // Opens Admin Dashboard
+            new User().setVisible(true);
+
+            this.dispose();
+        
+        }else {
+
+            JOptionPane.showMessageDialog(this,"Invalid Admin Credentials","Login Failed",JOptionPane.ERROR_MESSAGE);
         }        // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 

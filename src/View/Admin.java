@@ -502,57 +502,86 @@ public class Admin extends javax.swing.JFrame {
 
     private void btnAddBusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddBusActionPerformed
         try {
-            int busId = Integer.parseInt(txtBusId.getText());
+            // Validate empty fields first
+            if (txtBusId.getText().trim().isEmpty()
+                    || txtBusNumber.getText().trim().isEmpty()
+                    || txtRoute.getText().trim().isEmpty()
+                    || txtTime.getText().trim().isEmpty()
+                    || txtFare.getText().trim().isEmpty()
+                    || txtTotalSeats.getText().trim().isEmpty()) {
+
+                JOptionPane.showMessageDialog(this, "All fields are required", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            int busId = Integer.parseInt(txtBusId.getText().trim());
             String busNumber = txtBusNumber.getText().trim();
             String route = txtRoute.getText().trim();
             String time = txtTime.getText().trim();
-            double fare = Double.parseDouble(txtFare.getText());
-            int seats = Integer.parseInt(txtTotalSeats.getText());
-            Bus bus = new Bus(busId, busNumber, route, fare, time, seats);
-            boolean added = busController.addBus(bus);
-
-            if (busNumber.isEmpty() || route.isEmpty() || time.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "All fields are required");
+            double fare = Double.parseDouble(txtFare.getText().trim());
+            int seats = Integer.parseInt(txtTotalSeats.getText().trim());
+            if (busId <= 0) {
+                JOptionPane.showMessageDialog(this, "Bus ID must be greater than 0", "Validation Error", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-
-            if (added) {
-                JOptionPane.showMessageDialog(this, "Bus added successfully");
-            } else {
-                JOptionPane.showMessageDialog(this, "Duplicate Bus ID or Bus Number detected");
+            if (fare < 0) {
+                JOptionPane.showMessageDialog(this, "Fare cannot be negative", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                return;
             }
-
+            if (seats <= 0) {
+                JOptionPane.showMessageDialog(this, "Total seats must be greater than 0", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            Bus bus = new Bus(busId, busNumber, route, fare, time, seats);
+            boolean added = busController.addBus(bus);
+            if (added) {
+                JOptionPane.showMessageDialog(this, "Bus added successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                loadBusTable();
+                loadHomeData();
+                clearBusFields();
+            }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter valid numeric values");
+            JOptionPane.showMessageDialog(this, "Please enter valid numeric values for Bus ID, Fare, and Total Seats", "Input Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (HeadlessException e) {
-            JOptionPane.showMessageDialog(this, "Error adding bus");
-        }        // TODO add your handling code here:
+            JOptionPane.showMessageDialog(this, "Unexpected error adding bus: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }// TODO add your handling code here:
     }//GEN-LAST:event_btnAddBusActionPerformed
 
     private void btnUpdateBusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateBusActionPerformed
         try {
-            int busId = Integer.parseInt(txtBusId.getText());
-            String busNumber = txtBusNumber.getText();
-            String route = txtRoute.getText();
-            double fare = Double.parseDouble(txtFare.getText());
-            String time = txtTime.getText();
-            int seats = Integer.parseInt(txtTotalSeats.getText());
+            // Validate empty fields
+            if (txtBusId.getText().trim().isEmpty()
+                    || txtBusNumber.getText().trim().isEmpty()
+                    || txtRoute.getText().trim().isEmpty()
+                    || txtTime.getText().trim().isEmpty()
+                    || txtFare.getText().trim().isEmpty()
+                    || txtTotalSeats.getText().trim().isEmpty()) {
 
+                JOptionPane.showMessageDialog(this, "All fields are required","Validation Error",JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            int busId = Integer.parseInt(txtBusId.getText().trim());
+            String busNumber = txtBusNumber.getText().trim();
+            String route = txtRoute.getText().trim();
+            double fare = Double.parseDouble(txtFare.getText().trim());
+            String time = txtTime.getText().trim();
+            int seats = Integer.parseInt(txtTotalSeats.getText().trim());
             Bus updatedBus = new Bus(busId, busNumber, route, fare, time, seats);
-
             boolean updated = busController.updateBus(updatedBus);
-
             if (updated) {
-                JOptionPane.showMessageDialog(this, "Bus updated successfully");
+                JOptionPane.showMessageDialog(this,"Bus updated successfully","Success",JOptionPane.INFORMATION_MESSAGE);
                 loadBusTable();
                 loadHomeData();
                 clearBusFields();
-            } else {
-                JOptionPane.showMessageDialog(this, "Bus not found");
             }
 
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter valid data");
+            JOptionPane.showMessageDialog(this,"Please enter valid numeric values for Bus ID, Fare, and Total Seats","Input Error",JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this,e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+        } catch (HeadlessException e) {
+            JOptionPane.showMessageDialog(this,"Unexpected error updating bus: " + e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
         }// TODO add your handling code here:
     }//GEN-LAST:event_btnUpdateBusActionPerformed
 
@@ -579,7 +608,7 @@ public class Admin extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Bus not found");
             }
 
-        } catch (NumberFormatException e) {
+        } catch (HeadlessException | NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Enter a valid Bus ID");
         } // TODO add your handling code here:
     }//GEN-LAST:event_btnDeleteBusActionPerformed

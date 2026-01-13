@@ -13,6 +13,8 @@ public class LoginController {
     // Admin credentials
     private final String adminUsername = "admin";
     private final String adminPassword = "admin123";
+    private final String userUsername = "user";
+    private final String userPassword = "user123";
 
     public boolean loginAsAdmin(String username, String password) {
 
@@ -22,5 +24,14 @@ public class LoginController {
 
         return username.equals(adminUsername)
                 && password.equals(adminPassword);
+    }
+    public boolean loginAsUser(String username, String password) {
+
+        if (username == null || password == null) {
+            return false;
+        }
+
+        return username.equals(userUsername)
+                && password.equals(userPassword);
     }
 }

@@ -10,7 +10,9 @@ package View;
  */
 import Controller.BusController;
 import Model.Bus;
+import java.awt.HeadlessException;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 public class User extends javax.swing.JFrame {
@@ -242,67 +244,104 @@ public class User extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        String keyword = txtSearch.getText();
+        try {
+            String keyword = txtSearch.getText().trim();
 
-        tableModel.setRowCount(0);
+            tableModel.setRowCount(0);
 
-        ArrayList<Bus> results = busController.searchBuses(keyword);
+            ArrayList<Bus> results = busController.searchBuses(keyword);
 
-        for (int i = 0; i < results.size(); i++) {
-            Bus bus = results.get(i);
+            if (results.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "No buses found matching your search criteria", "Search Results", JOptionPane.INFORMATION_MESSAGE);
+            }
 
-            Object[] row = new Object[6];
-            row[0] = bus.getBusId();
-            row[1] = bus.getBusNumber();
-            row[2] = bus.getRoute();
-            row[3] = bus.getFare();
-            row[4] = bus.getDepartureTime();
-            row[5] = bus.getAvailableSeats();
+            for (Bus bus : results) {
+                Object[] row = new Object[6];
+                row[0] = bus.getBusId();
+                row[1] = bus.getBusNumber();
+                row[2] = bus.getRoute();
+                row[3] = bus.getFare();
+                row[4] = bus.getDepartureTime();
+                row[5] = bus.getAvailableSeats();
 
-            tableModel.addRow(row);
-        }        // TODO add your handling code here:
+                tableModel.addRow(row);
+            }
+
+        } catch (HeadlessException e) {
+            JOptionPane.showMessageDialog(this, "Error searching buses: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }       // TODO add your handling code here:
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void cmbSortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbSortActionPerformed
-        String selected = cmbSort.getSelectedItem().toString();
+        try {
+            String selected = cmbSort.getSelectedItem().toString();
 
-        if (selected.equals("Fare")) {
-            busController.sortByFare();
-        } else if (selected.equals("Bus ID")) {
-            busController.binarySearchById(-1); // forces ID sort
-        }
+            if (selected.equals("Fare")) {
+                busController.sortByFare();
+            } else if (selected.equals("Bus ID")) {
+                busController.sortById();
+            }
 
-        loadBusTable();        // TODO add your handling code here:
+            loadBusTable();
+
+        } catch (NullPointerException e) {
+            JOptionPane.showMessageDialog(this, "Please select a sort option", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error sorting buses: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }        // TODO add your handling code here:
     }//GEN-LAST:event_cmbSortActionPerformed
 
     private void btnBookSeatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBookSeatActionPerformed
-        int row = tblBus.getSelectedRow();
+        try {
+            int row = tblBus.getSelectedRow();
 
-        if (row == -1) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Select a bus first");
-            return;
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a bus from the table first", "Selection Required", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            int busId = (int) tableModel.getValueAt(row, 0);
+            int availableSeats = (int) tableModel.getValueAt(row, 5);
+
+            if (availableSeats <= 0) {
+                JOptionPane.showMessageDialog(this, "No seats available on this bus", "Booking Failed", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            boolean booked = busController.bookSeat(busId);
+
+            if (booked) {
+                JOptionPane.showMessageDialog(this, "Seat booked successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                loadBusTable();
+            } else {
+                JOptionPane.showMessageDialog(this, "Unable to book seat. Please try again.", "Booking Failed", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (HeadlessException e) {
+            JOptionPane.showMessageDialog(this, "Unexpected error booking seat: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        int busId = (int) tableModel.getValueAt(row, 0);
-
-        boolean booked = busController.bookSeat(busId);
-
-        if (booked) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Seat booked successfully");
-            loadBusTable();
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "No seats available");
-        }    // TODO add your handling code here:
     }//GEN-LAST:event_btnBookSeatActionPerformed
 
     private void btnCancelBookingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelBookingActionPerformed
-        boolean cancelled = busController.cancelLastBooking();
+        try {
+            // Confirmation dialog
+            int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to cancel the last booking?", "Confirm Cancellation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-        if (cancelled) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Last booking cancelled");
-            loadBusTable();
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "No booking history");
+            if (confirm == JOptionPane.YES_OPTION) {
+                boolean cancelled = busController.cancelLastBooking();
+
+                if (cancelled) {
+                    JOptionPane.showMessageDialog(this, "Last booking cancelled successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    loadBusTable();
+                }
+            }
+
+        } catch (IllegalStateException e) {
+            JOptionPane.showMessageDialog(this, "No booking history available to cancel", "Information", JOptionPane.INFORMATION_MESSAGE);
+        } catch (HeadlessException e) {
+            JOptionPane.showMessageDialog(this, "Unexpected error cancelling booking: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } // TODO add your handling code here:
     }//GEN-LAST:event_btnCancelBookingActionPerformed
 
