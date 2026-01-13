@@ -32,49 +32,76 @@ public class BusController {
     }
 
     private void loadPreData() {
-        try {
-            addBus(new Bus(101, "NW-01", "Kathmandu - Pokhara", 1200, "6:00 AM", 40));
-            addBus(new Bus(102, "NW-02", "Kathmandu - Chitwan", 800, "7:30 AM", 35));
-            addBus(new Bus(103, "NW-03", "Pokhara - Butwal", 900, "9:00 AM", 30));
-            addBus(new Bus(104, "NW-04", "Dharan - Kathmandu", 1500, "5:00 PM", 45));
-            addBus(new Bus(105, "NW-05", "Nepalgunj - Surkhet", 700, "8:00 AM", 25));
-        } catch (Exception e) {
-            System.out.println("Error loading pre-data: " + e.getMessage());
-        }
+        addBus(new Bus(101, "NW-01", "Kathmandu - Pokhara", 1200, "6:00 AM", 40));
+        addBus(new Bus(102, "NW-02", "Kathmandu - Chitwan", 800, "7:30 AM", 35));
+        addBus(new Bus(103, "NW-03", "Pokhara - Butwal", 900, "9:00 AM", 30));
+        addBus(new Bus(104, "NW-04", "Dharan - Kathmandu", 1500, "5:00 PM", 45));
+        addBus(new Bus(105, "NW-05", "Nepalgunj - Surkhet", 700, "8:00 AM", 25));
     }
 
+    // ADD BUS (NO DUPLICATES)
     public boolean addBus(Bus bus) {
         try {
             if (bus == null) {
-                throw new IllegalArgumentException("Bus is null");
+                throw new IllegalArgumentException("Bus cannot be null");
             }
-            for (Bus existingBus : busList) {
+
+            for (int i = 0; i < busList.size(); i++) {
+                Bus existingBus = busList.get(i);
+
                 if (existingBus.getBusId() == bus.getBusId()) {
-                    return false;
+                    throw new IllegalArgumentException("Duplicate Bus ID");
                 }
+
                 if (existingBus.getBusNumber()
                         .equalsIgnoreCase(bus.getBusNumber().trim())) {
-                    return false;
+                    throw new IllegalArgumentException("Duplicate Bus Number");
                 }
             }
+
             busList.add(bus);
+
             recentBuses.add(bus);
             if (recentBuses.size() > 5) {
                 recentBuses.poll();
             }
+
             return true;
+
         } catch (IllegalArgumentException e) {
-            System.out.println("Error adding bus: " + e.getMessage());
+            System.out.println("Add Bus Error: " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.println("Unexpected Error while adding bus");
             return false;
         }
     }
 
-    public ArrayList<Bus> getAllBuses() {
-        return busList;
-    }
+    public boolean updateBus(Bus updatedBus) {
+        try {
+            if (updatedBus == null) {
+                throw new IllegalArgumentException("Bus is null");
+            }
 
-    public Queue<Bus> getRecentBuses() {
-        return recentBuses;
+            for (int i = 0; i < busList.size(); i++) {
+                Bus bus = busList.get(i);
+
+                if (bus.getBusId() == updatedBus.getBusId()) {
+                    bus.setBusNumber(updatedBus.getBusNumber());
+                    bus.setRoute(updatedBus.getRoute());
+                    bus.setFare(updatedBus.getFare());
+                    bus.setDepartureTime(updatedBus.getDepartureTime());
+                    bus.setTotalSeats(updatedBus.getTotalSeats());
+                    return true;
+                }
+            }
+
+            return false;
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Update Bus Error: " + e.getMessage());
+            return false;
+        }
     }
 
     public boolean deleteBus(int busId) {
@@ -92,113 +119,47 @@ public class BusController {
         }
     }
 
-    public boolean updateBus(Bus updatedBus) {
-        try {
-            if (updatedBus == null) {
-                return false;
+    public ArrayList<Bus> getAllBuses() {
+        return new ArrayList<>(busList);
+    }
+
+    public Queue<Bus> getRecentBuses() {
+        return recentBuses;
+    }
+
+    // SEARCH
+    public ArrayList<Bus> searchBuses(String keyword) {
+        ArrayList<Bus> results = new ArrayList<>();
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return getAllBuses();
+        }
+
+        for (Bus bus : busList) {
+            if (bus.getBusNumber().toLowerCase().contains(keyword.toLowerCase())
+                    || bus.getRoute().toLowerCase().contains(keyword.toLowerCase())) {
+                results.add(bus);
             }
+        }
+        return results;
+    }
 
-            for (int i = 0; i < busList.size(); i++) {
-                Bus existingBus = busList.get(i);
-
-                if (existingBus.getBusId() == updatedBus.getBusId()) {
-
-                    existingBus.setBusNumber(updatedBus.getBusNumber());
-                    existingBus.setRoute(updatedBus.getRoute());
-                    existingBus.setFare(updatedBus.getFare());
-                    existingBus.setDepartureTime(updatedBus.getDepartureTime());
-
-                    // Update total seats ONLY if valid
-                    if (updatedBus.getAvailableSeats() >= existingBus.getAvailableSeats()) {
-                        existingBus.setTotalSeats(updatedBus.getAvailableSeats());
-                    }
-
-                    return true;
+    // SORT BY FARE
+    public void sortByFare() {
+        for (int i = 0; i < busList.size() - 1; i++) {
+            for (int j = 0; j < busList.size() - i - 1; j++) {
+                if (busList.get(j).getFare() > busList.get(j + 1).getFare()) {
+                    Bus temp = busList.get(j);
+                    busList.set(j, busList.get(j + 1));
+                    busList.set(j + 1, temp);
                 }
             }
-            return false;
-
-        } catch (Exception e) {
-            System.out.println("Error updating bus: " + e.getMessage());
-            return false;
         }
     }
 
-
-    public boolean bookSeat(int busId) {
-        try {
-            Bus bus = binarySearchById(busId);
-            if (bus != null && bus.bookSeat()) {
-                bookingHistory.push(bus);   // STACK PUSH
-                return true;
-            }
-            return false;
-        } catch (Exception e) {
-            System.out.println("Error booking seat: " + e.getMessage());
-            return false;
-        }
-    }
-
-
-    public boolean cancelLastBooking() {
-        try {
-            if (!bookingHistory.isEmpty()) {
-                Bus bus = bookingHistory.pop();  // STACK POP
-                bus.cancelSeat();
-                return true;
-            }
-            return false;
-        } catch (Exception e) {
-            System.out.println("Error cancelling booking: " + e.getMessage());
-            return false;
-        }
-    }
-
-  
     public Bus binarySearchById(int busId) {
         try {
-            sortById();
-
-            int low = 0;
-            int high = busList.size() - 1;
-
-            while (low <= high) {
-                int mid = (low + high) / 2;
-
-                if (busList.get(mid).getBusId() == busId) {
-                    return busList.get(mid);
-                } else if (busList.get(mid).getBusId() < busId) {
-                    low = mid + 1;
-                } else {
-                    high = mid - 1;
-                }
-            }
-            return null;
-
-        } catch (Exception e) {
-            System.out.println("Error searching bus: " + e.getMessage());
-            return null;
-        }
-    }
-
-    public void sortByFare() {
-        try {
-            for (int i = 0; i < busList.size() - 1; i++) {
-                for (int j = 0; j < busList.size() - i - 1; j++) {
-                    if (busList.get(j).getFare() > busList.get(j + 1).getFare()) {
-                        Bus temp = busList.get(j);
-                        busList.set(j, busList.get(j + 1));
-                        busList.set(j + 1, temp);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Error sorting by fare: " + e.getMessage());
-        }
-    }
-
-    private void sortById() {
-        try {
+            // Sort by ID (Bubble Sort)
             for (int i = 0; i < busList.size() - 1; i++) {
                 for (int j = 0; j < busList.size() - i - 1; j++) {
                     if (busList.get(j).getBusId() > busList.get(j + 1).getBusId()) {
@@ -208,8 +169,53 @@ public class BusController {
                     }
                 }
             }
+
+            int left = 0;
+            int right = busList.size() - 1;
+
+            while (left <= right) {
+                int mid = (left + right) / 2;
+
+                if (busList.get(mid).getBusId() == busId) {
+                    return busList.get(mid);
+                } else if (busList.get(mid).getBusId() < busId) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+
+            return null;
+
         } catch (Exception e) {
-            System.out.println("Error sorting by ID: " + e.getMessage());
+            System.out.println("Binary Search Error: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public boolean bookSeat(int busId) {
+        try {
+            Bus bus = binarySearchById(busId);
+            if (bus != null && bus.bookSeat()) {
+                bookingHistory.push(bus);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean cancelLastBooking() {
+        try {
+            if (!bookingHistory.isEmpty()) {
+                Bus bus = bookingHistory.pop();
+                bus.cancelSeat();
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
         }
     }
 
@@ -218,28 +224,19 @@ public class BusController {
     }
 
     public int getTotalAvailableSeats() {
-        try {
-            int total = 0;
-            for (Bus bus : busList) {
-                total += bus.getAvailableSeats();
-            }
-            return total;
-        } catch (Exception e) {
-            System.out.println("Error calculating seats: " + e.getMessage());
-            return 0;
+        int total = 0;
+        for (Bus bus : busList) {
+            total += bus.getAvailableSeats();
         }
+        return total;
     }
 
     public ArrayList<String> getRoutesCovered() {
         ArrayList<String> routes = new ArrayList<>();
-        try {
-            for (Bus bus : busList) {
-                if (!routes.contains(bus.getRoute())) {
-                    routes.add(bus.getRoute());
-                }
+        for (Bus bus : busList) {
+            if (!routes.contains(bus.getRoute())) {
+                routes.add(bus.getRoute());
             }
-        } catch (Exception e) {
-            System.out.println("Error getting routes: " + e.getMessage());
         }
         return routes;
     }

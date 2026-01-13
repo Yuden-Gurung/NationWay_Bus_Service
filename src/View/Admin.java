@@ -142,11 +142,9 @@ public class Admin extends javax.swing.JFrame {
         jLabel14 = new javax.swing.JLabel();
         txtTotalSeats = new javax.swing.JTextField();
         btnDeleteBus = new javax.swing.JButton();
-        search = new javax.swing.JPanel();
         sidePanel = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
 
@@ -240,8 +238,7 @@ public class Admin extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(29, 29, 29)
-                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -280,6 +277,11 @@ public class Admin extends javax.swing.JFrame {
 
         busManagement.setBackground(new java.awt.Color(51, 51, 51));
 
+        busTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                busTableMouseClicked(evt);
+            }
+        });
         jScrollPane3.setViewportView(busTable);
 
         btnAddBus.setFont(new java.awt.Font("Viner Hand ITC", 1, 24)); // NOI18N
@@ -432,21 +434,6 @@ public class Admin extends javax.swing.JFrame {
 
         parent.add(busManagement, "BUS");
 
-        search.setBackground(new java.awt.Color(255, 255, 255));
-
-        javax.swing.GroupLayout searchLayout = new javax.swing.GroupLayout(search);
-        search.setLayout(searchLayout);
-        searchLayout.setHorizontalGroup(
-            searchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 701, Short.MAX_VALUE)
-        );
-        searchLayout.setVerticalGroup(
-            searchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 507, Short.MAX_VALUE)
-        );
-
-        parent.add(search, "SEARCH");
-
         sidePanel.setBackground(new java.awt.Color(255, 255, 204));
         sidePanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 3));
         sidePanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -459,7 +446,7 @@ public class Admin extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
-        sidePanel.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 190, 60));
+        sidePanel.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 210, 190, 60));
 
         jButton2.setFont(new java.awt.Font("Times New Roman", 1, 20)); // NOI18N
         jButton2.setForeground(new java.awt.Color(0, 102, 102));
@@ -469,17 +456,7 @@ public class Admin extends javax.swing.JFrame {
                 jButton2ActionPerformed(evt);
             }
         });
-        sidePanel.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, 190, 60));
-
-        jButton3.setFont(new java.awt.Font("Times New Roman", 1, 20)); // NOI18N
-        jButton3.setForeground(new java.awt.Color(0, 102, 102));
-        jButton3.setText("Search and Sort");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-        sidePanel.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 360, 190, 60));
+        sidePanel.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 320, 190, 60));
 
         jLabel2.setFont(new java.awt.Font("Viner Hand ITC", 3, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(51, 51, 51));
@@ -509,10 +486,6 @@ public class Admin extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        cardLayout.show(parent, "SEARCH");        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         cardLayout.show(parent, "HOME");// TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -537,7 +510,7 @@ public class Admin extends javax.swing.JFrame {
             int seats = Integer.parseInt(txtTotalSeats.getText());
             Bus bus = new Bus(busId, busNumber, route, fare, time, seats);
             boolean added = busController.addBus(bus);
-            
+
             if (busNumber.isEmpty() || route.isEmpty() || time.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "All fields are required");
                 return;
@@ -611,6 +584,21 @@ public class Admin extends javax.swing.JFrame {
         } // TODO add your handling code here:
     }//GEN-LAST:event_btnDeleteBusActionPerformed
 
+    private void busTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_busTableMouseClicked
+        int selectedRow = busTable.getSelectedRow();
+
+        if (selectedRow >= 0) {
+
+            txtBusId.setText(busTableModel.getValueAt(selectedRow, 0).toString());
+            txtBusNumber.setText(busTableModel.getValueAt(selectedRow, 1).toString());
+            txtRoute.setText(busTableModel.getValueAt(selectedRow, 2).toString());
+            txtFare.setText(busTableModel.getValueAt(selectedRow, 3).toString());
+            txtTime.setText(busTableModel.getValueAt(selectedRow, 4).toString());
+
+            txtTotalSeats.setText(busTableModel.getValueAt(selectedRow, 5).toString());
+        }    // TODO add your handling code here:
+    }//GEN-LAST:event_busTableMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -645,7 +633,6 @@ public class Admin extends javax.swing.JFrame {
     private javax.swing.JPanel homePanel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -661,13 +648,10 @@ public class Admin extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JPanel parent;
-    private javax.swing.JPanel search;
     private javax.swing.JPanel sidePanel;
     private javax.swing.JTextField txtBusId;
     private javax.swing.JTextField txtBusNumber;
