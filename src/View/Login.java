@@ -190,7 +190,7 @@ public class Login extends javax.swing.JFrame {
         
         }else {
 
-            JOptionPane.showMessageDialog(this,"Invalid Admin Credentials","Login Failed",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,"Invalid Login Credentials","Login Failed",JOptionPane.ERROR_MESSAGE);
         }        // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
