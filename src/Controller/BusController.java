@@ -92,7 +92,6 @@ public class BusController {
                     return true;
                 }
             }
-
             throw new IllegalArgumentException("Bus with ID " + busId + " not found");
 
         } catch (IllegalArgumentException e) {

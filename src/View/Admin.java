@@ -604,11 +604,14 @@ public class Admin extends javax.swing.JFrame {
                 loadBusTable();
                 loadHomeData();
                 clearBusFields();
-            } else {
-                JOptionPane.showMessageDialog(this, "Bus not found");
+            } 
+            else {
+                JOptionPane.showMessageDialog(this, "Bus not found","Error",JOptionPane.ERROR_MESSAGE);
             }
 
-        } catch (HeadlessException | NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this,e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+        }catch (HeadlessException e) {
             JOptionPane.showMessageDialog(this, "Enter a valid Bus ID");
         } // TODO add your handling code here:
     }//GEN-LAST:event_btnDeleteBusActionPerformed
