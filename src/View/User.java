@@ -96,7 +96,7 @@ public class User extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(51, 51, 51));
 
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/istockphoto-1487382263-612x612 (1).jpg"))); // NOI18N
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/View/istockphoto-1487382263-612x612 (1).jpg"))); // NOI18N
         jLabel2.setText("jLabel2");
 
         jLabel1.setFont(new java.awt.Font("Viner Hand ITC", 2, 36)); // NOI18N
