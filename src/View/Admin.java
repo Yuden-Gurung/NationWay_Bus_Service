@@ -13,6 +13,10 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 
 /**
+ * Admin dashboard for the NationWay Bus Service system. Provides comprehensive
+ * interface for administrators to manage buses, view statistics, and perform
+ * CRUD operations. Uses CardLayout to switch between Home and Bus Management
+ * panels
  *
  * @author lalit
  */
@@ -25,7 +29,9 @@ public class Admin extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Admin.class.getName());
 
     /**
-     * Creates new form Admin
+     * Constructs the Admin dashboard and initializes all components. Sets up
+     * the CardLayout for panel switching, initializes the bus controller, loads
+     * initial data, and configures the window properties.
      */
     public Admin() {
         initComponents();
@@ -39,6 +45,13 @@ public class Admin extends javax.swing.JFrame {
         setLocationRelativeTo(null);
 
     }
+
+    /**
+     * Loads and displays statistics on the home panel. Updates the following
+     * information: - Total number of buses in the system - Total available
+     * seats across all buses - List of 5 most recently added buses - List of
+     * unique routes covered by all buses
+     */
 
     private void loadHomeData() {
 
@@ -58,6 +71,11 @@ public class Admin extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Initializes the bus management table with column headers. Sets up a
+     * DefaultTableModel with six columns: Bus ID, Bus Number, Route, Fare,
+     * Departure Time, and Available Seats.
+     */
     private void initializeBusTable() {
 
         busTableModel = new DefaultTableModel();
@@ -72,6 +90,11 @@ public class Admin extends javax.swing.JFrame {
         busTable.setModel(busTableModel);
     }
 
+    /**
+     * Loads all buses from the controller into the table display. Clears
+     * existing table data and populates with current bus information. Each row
+     * displays complete details for one bus.
+     */
     private void loadBusTable() {
 
         busTableModel.setRowCount(0); // clear table
@@ -93,6 +116,11 @@ public class Admin extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Clears all input fields in the bus management form. Resets Bus ID, Bus
+     * Number, Route, Fare, Departure Time, and Total Seats fields to empty
+     * strings.
+     */
     private void clearBusFields() {
         txtBusId.setText("");
         txtBusNumber.setText("");
@@ -558,7 +586,7 @@ public class Admin extends javax.swing.JFrame {
                     || txtFare.getText().trim().isEmpty()
                     || txtTotalSeats.getText().trim().isEmpty()) {
 
-                JOptionPane.showMessageDialog(this, "All fields are required","Validation Error",JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "All fields are required", "Validation Error", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             int busId = Integer.parseInt(txtBusId.getText().trim());
@@ -570,18 +598,18 @@ public class Admin extends javax.swing.JFrame {
             Bus updatedBus = new Bus(busId, busNumber, route, fare, time, seats);
             boolean updated = busController.updateBus(updatedBus);
             if (updated) {
-                JOptionPane.showMessageDialog(this,"Bus updated successfully","Success",JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Bus updated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
                 loadBusTable();
                 loadHomeData();
                 clearBusFields();
             }
 
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this,"Please enter valid numeric values for Bus ID, Fare, and Total Seats","Input Error",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please enter valid numeric values for Bus ID, Fare, and Total Seats", "Input Error", JOptionPane.ERROR_MESSAGE);
         } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this,e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (HeadlessException e) {
-            JOptionPane.showMessageDialog(this,"Unexpected error updating bus: " + e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Unexpected error updating bus: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }// TODO add your handling code here:
     }//GEN-LAST:event_btnUpdateBusActionPerformed
 
@@ -604,14 +632,13 @@ public class Admin extends javax.swing.JFrame {
                 loadBusTable();
                 loadHomeData();
                 clearBusFields();
-            } 
-            else {
-                JOptionPane.showMessageDialog(this, "Bus not found","Error",JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Bus not found", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this,e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-        }catch (HeadlessException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (HeadlessException e) {
             JOptionPane.showMessageDialog(this, "Enter a valid Bus ID");
         } // TODO add your handling code here:
     }//GEN-LAST:event_btnDeleteBusActionPerformed

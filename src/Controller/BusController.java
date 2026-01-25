@@ -5,6 +5,14 @@
 package Controller;
 
 /**
+ * Controller class for managing bus operations in the NationWay Bus Service
+ * system. This class handles all business logic related to buses including add,
+ * update, delete, search, sort operations, and booking management using various
+ * data structures.
+ *
+ * Data Structures Used: - ArrayList: For storing the main bus collection -
+ * Queue (LinkedList): For tracking recently added buses (max 5) - Stack: For
+ * maintaining booking history for undo functionality
  *
  * @author lalit
  */
@@ -20,6 +28,10 @@ public class BusController {
     private Queue<Bus> recentBuses;
     private Stack<Bus> bookingHistory;
 
+    /**
+     * Constructs a new BusController and initializes data structures. Also
+     * loads predefined bus data for demonstration purposes.
+     */
     public BusController() {
         try {
             busList = new ArrayList<>();
@@ -31,6 +43,11 @@ public class BusController {
         }
     }
 
+    /**
+     * Loads predefined bus data into the system. This method is called during
+     * initialization to populate the system with sample bus routes for testing
+     * and demonstration.
+     */
     private void loadPreData() {
         try {
             addBus(new Bus(101, "NW-01", "Kathmandu - Pokhara", 1200, "6:00 AM", 40));
@@ -43,7 +60,16 @@ public class BusController {
         }
     }
 
-    // ADD BUS (NO DUPLICATES)
+    /**
+     * Adds a new bus to the system with duplicate validation. Checks for
+     * duplicate Bus ID and Bus Number before adding. Also updates the recent
+     * buses queue (maintains last 5 additions).
+     *
+     * @param bus The Bus object to be added
+     * @return true if bus was successfully added, false otherwise
+     * @throws IllegalArgumentException if bus is null, has duplicate ID, or
+     * duplicate bus number
+     */
     public boolean addBus(Bus bus) {
         try {
             if (bus == null) {
@@ -80,6 +106,13 @@ public class BusController {
         }
     }
 
+    /**
+     * Deletes a bus from the system by its ID.
+     *
+     * @param busId The ID of the bus to be deleted
+     * @return true if bus was successfully deleted, false otherwise
+     * @throws IllegalArgumentException if busId <= 0 or bus not found
+     */
     public boolean deleteBus(int busId) {
         try {
             if (busId <= 0) {
@@ -103,6 +136,16 @@ public class BusController {
         }
     }
 
+    /**
+     * Updates an existing bus's information. Validates all fields before
+     * updating. The bus is identified by its ID, and all other fields are
+     * updated with the new values.
+     *
+     * @param updatedBus The Bus object containing updated information
+     * @return true if bus was successfully updated, false otherwise
+     * @throws IllegalArgumentException if updated data is invalid or bus not
+     * found
+     */
     public boolean updateBus(Bus updatedBus) {
         try {
             if (updatedBus == null) {
@@ -145,6 +188,15 @@ public class BusController {
         }
     }
 
+    /**
+     * Books a seat on the specified bus. Uses binary search to find the bus
+     * efficiently and adds the booking to the booking history stack for
+     * potential cancellation.
+     *
+     * @param busId The ID of the bus to book a seat on
+     * @return true if seat was successfully booked, false otherwise
+     * @throws IllegalArgumentException if busId is invalid or bus not found
+     */
     public boolean bookSeat(int busId) {
         try {
             if (busId <= 0) {
@@ -173,6 +225,13 @@ public class BusController {
         }
     }
 
+    /**
+     * Cancels the most recent booking using stack-based history. Pops the last
+     * booking from the history stack and cancels that seat.
+     *
+     * @return true if booking was successfully cancelled, false otherwise
+     * @throws IllegalStateException if no booking history is available
+     */
     public boolean cancelLastBooking() {
         try {
             if (bookingHistory.isEmpty()) {
@@ -192,15 +251,31 @@ public class BusController {
         }
     }
 
+    /**
+     * Returns a copy of all buses in the system.
+     *
+     * @return ArrayList containing all Bus objects
+     */
     public ArrayList<Bus> getAllBuses() {
         return new ArrayList<>(busList);
     }
 
+    /**
+     * Returns a copy of the recently added buses queue.
+     *
+     * @return Queue containing the 5 most recently added buses
+     */
     public Queue<Bus> getRecentBuses() {
         return new LinkedList<>(recentBuses);
     }
 
-    // SEARCH
+    /**
+     * Searches for buses by keyword matching in bus number or route. Performs
+     * case-insensitive search on both bus number and route fields.
+     *
+     * @param keyword The search term (searches bus number and route)
+     * @return ArrayList of buses matching the search criteria
+     */
     public ArrayList<Bus> searchBuses(String keyword) {
         try {
             ArrayList<Bus> results = new ArrayList<>();
@@ -226,12 +301,27 @@ public class BusController {
         }
     }
 
+    /**
+     * Performs binary search to find a bus by its ID. First sorts the bus list
+     * by ID using bubble sort, then performs binary search algorithm for
+     * efficient lookup.
+     *
+     * Time Complexity: O(n²) for sorting + O(log n) for binary search
+     *
+     * @param busId The ID of the bus to search for
+     * @return The Bus object if found, null otherwise
+     * @throws IllegalArgumentException if busId <= 0
+     */
     public Bus binarySearchById(int busId) {
         try {
             if (busId <= 0) {
                 throw new IllegalArgumentException("Invalid Bus ID");
             }
+
+            // Create sorted copy of bus list
             ArrayList<Bus> sortedList = new ArrayList<>(busList);
+
+            // Bubble sort by bus ID
             for (int i = 0; i < sortedList.size() - 1; i++) {
                 for (int j = 0; j < sortedList.size() - i - 1; j++) {
                     if (sortedList.get(j).getBusId() > sortedList.get(j + 1).getBusId()) {
@@ -241,12 +331,15 @@ public class BusController {
                     }
                 }
             }
+
+            // Binary search
             int left = 0;
             int right = sortedList.size() - 1;
             while (left <= right) {
-                int mid = left + (right - left) / 2; 
+                int mid = left + (right - left) / 2;
 
                 if (sortedList.get(mid).getBusId() == busId) {
+                    // Return original bus object from busList
                     for (Bus bus : busList) {
                         if (bus.getBusId() == busId) {
                             return bus;
@@ -268,7 +361,12 @@ public class BusController {
         }
     }
 
-    // SORT BY FARE (Bubble Sort)
+    /**
+     * Sorts the bus list by fare in ascending order using Bubble Sort
+     * algorithm.
+     *
+     * Time Complexity: O(n²) Space Complexity: O(1)
+     */
     public void sortByFare() {
         try {
             for (int i = 0; i < busList.size() - 1; i++) {
@@ -285,7 +383,12 @@ public class BusController {
         }
     }
 
-    // SORT BY BUS ID (Bubble Sort)
+    /**
+     * Sorts the bus list by bus ID in ascending order using Bubble Sort
+     * algorithm.
+     *
+     * Time Complexity: O(n²) Space Complexity: O(1)
+     */
     public void sortById() {
         try {
             for (int i = 0; i < busList.size() - 1; i++) {
@@ -302,10 +405,20 @@ public class BusController {
         }
     }
 
+    /**
+     * Gets the total number of buses in the system.
+     *
+     * @return Total count of buses
+     */
     public int getTotalBuses() {
         return busList.size();
     }
 
+    /**
+     * Calculates the total number of available seats across all buses.
+     *
+     * @return Sum of available seats from all buses
+     */
     public int getTotalAvailableSeats() {
         try {
             int total = 0;
@@ -319,6 +432,12 @@ public class BusController {
         }
     }
 
+    /**
+     * Gets a list of unique routes covered by all buses. Returns only distinct
+     * routes without duplicates.
+     *
+     * @return ArrayList of unique route descriptions
+     */
     public ArrayList<String> getRoutesCovered() {
         try {
             ArrayList<String> routes = new ArrayList<>();

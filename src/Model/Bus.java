@@ -5,6 +5,9 @@
 package Model;
 
 /**
+ * Represents a bus in the NationWay Bus Service system. This class encapsulates
+ * all information related to a bus including. identification, route details,
+ * pricing, and seat availability.
  *
  * @author lalit
  */
@@ -18,6 +21,20 @@ public class Bus {
     private int totalSeats;
     private int availableSeats;
 
+    /**
+     * Constructs a new Bus object with the specified parameters. Initializes
+     * the bus with all required information and sets available seats equal to
+     * total seats.
+     *
+     * @param busId Unique identifier for the bus (must be positive)
+     * @param busNumber Registration/identification number of the bus
+     * @param route Route description (origin - destination)
+     * @param fare Ticket fare for this bus (cannot be negative)
+     * @param departureTime Scheduled departure time
+     * @param totalSeats Total number of seats in the bus (must be positive)
+     * @throws IllegalArgumentException if busId <= 0, totalSeats <= 0, or fare
+     * < 0
+     */
     public Bus(int busId, String busNumber, String route,
             double fare, String departureTime, int totalSeats) {
 
@@ -66,7 +83,6 @@ public class Bus {
     public int getTotalSeats() {
         return totalSeats;
     }
-    
 
     public void setBusId(int busId) {
         if (busId <= 0) {
@@ -74,6 +90,7 @@ public class Bus {
         }
         this.busId = busId;
     }
+
     public void setBusNumber(String busNumber) {
         this.busNumber = busNumber;
     }
@@ -92,6 +109,7 @@ public class Bus {
             System.out.println(e.getMessage());
         }
     }
+
     public void setDepartureTime(String departureTime) {
         this.departureTime = departureTime;
     }
@@ -119,6 +137,12 @@ public class Bus {
         }
     }
 
+    /**
+     * Books a seat on this bus by decrementing the available seats count.
+     *
+     * @return true if seat was successfully booked, false otherwise
+     * @throws IllegalStateException if no seats are available
+     */
     public boolean bookSeat() {
         try {
             if (availableSeats <= 0) {
@@ -132,6 +156,11 @@ public class Bus {
         }
     }
 
+    /**
+     * Cancels a seat booking by incrementing the available seats count.
+     *
+     * @throws IllegalStateException if all seats are already available
+     */
     public void cancelSeat() {
         try {
             if (availableSeats >= totalSeats) {

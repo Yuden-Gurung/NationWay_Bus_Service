@@ -5,6 +5,9 @@
 package View;
 
 /**
+ * User dashboard for the NationWay Bus Service system. Provides interface for
+ * regular users to search buses, view schedules, book seats, and cancel
+ * bookings.
  *
  * @author lalit
  */
@@ -22,7 +25,9 @@ public class User extends javax.swing.JFrame {
     private DefaultTableModel tableModel;
 
     /**
-     * Creates new form User
+     * Constructs the User dashboard and initializes all components. Sets up the
+     * bus controller, table model, and loads initial bus data. Configures
+     * window to be centred and not re-sizable.
      */
     public User() {
         initComponents();
@@ -33,6 +38,11 @@ public class User extends javax.swing.JFrame {
         setResizable(false);
     }
 
+    /**
+     * Initializes the bus table with appropriate column headers. Sets up a
+     * DefaultTableModel with six columns for bus information: Bus ID, Bus
+     * Number, Route, Fare, Departure Time, and Available Seats.
+     */
     private void initializeTable() {
         tableModel = new DefaultTableModel();
 
@@ -46,6 +56,11 @@ public class User extends javax.swing.JFrame {
         tblBus.setModel(tableModel);
     }
 
+    /**
+     * Loads all buses from the controller into the table display. Clears
+     * existing table data and populates with current bus information. Each row
+     * displays complete details for one bus.
+     */
     private void loadBusTable() {
         tableModel.setRowCount(0);
 

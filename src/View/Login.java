@@ -5,6 +5,8 @@
 package View;
 
 /**
+ * Login form for the NationWay Bus Service system. Provides authentication
+ * interface for both admin and regular users.
  *
  * @author lalit
  */
@@ -17,7 +19,8 @@ public class Login extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Login.class.getName());
 
     /**
-     * Creates new form Login
+     * Constructs the Login form and initializes all components. Sets up the
+     * login controller and configures window properties.
      */
     public Login() {
         initComponents();
@@ -179,18 +182,17 @@ public class Login extends javax.swing.JFrame {
 
             this.dispose();
 
-        } 
-        else if(loginController.loginAsUser(username,password)){
+        } else if (loginController.loginAsUser(username, password)) {
             JOptionPane.showMessageDialog(this, "User Login Successful");
 
             // Opens Admin Dashboard
             new User().setVisible(true);
 
             this.dispose();
-        
-        }else {
 
-            JOptionPane.showMessageDialog(this,"Invalid Login Credentials","Login Failed",JOptionPane.ERROR_MESSAGE);
+        } else {
+
+            JOptionPane.showMessageDialog(this, "Invalid Login Credentials", "Login Failed", JOptionPane.ERROR_MESSAGE);
         }        // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
